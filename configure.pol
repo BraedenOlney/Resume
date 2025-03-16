@@ -1,0 +1,65 @@
+# CS 6250 Fall 2024 - SDN Firewall Project with POX
+# build hackers-45
+#
+# This file contains the rules for the firewall as specified in the Project Documentation.  
+#
+# Rule Format:
+# RuleNumber,Action,Source MAC,Destination MAC,Source IP,Destination IP,Protocol,Source Port,Destination Port,Comment/Note
+# RuleNumber = this is a rule number to help you track a particular rule - it is not used in the firewall implementation
+# Action = Block or Allow , Allow Rules need to take precedence over Block Rules
+# Source / Destination MAC address in form of xx:xx:xx:xx:xx:xx
+# Source / Destination IP Address in form of xxx.xxx.xxx.xxx/xx in CIDR notation
+# Protocol = integer IP protocol number per IANA (0-254)
+# Source / Destination Port = if Protocol is TCP or UDP, this is the Application Port Number per IANA
+# Comment/Note = this is for your use in tracking rules.
+#
+# Any field not being used for a match should have a '-' character as it's entry (except for RuleNumber/Comment)
+# Do not pad any of the entries (i.e., have a rule like:  1, Block, -, -,...)
+#
+# Warning:  For the IP address, you need to specify an appropriate network address
+# that matches the subnet mask you are using.  For instance, if you want to use a /16
+# subnet mask, then the IP address must be x.x.0.0.  For example, a proper address to 
+# reference a 192.168.10.x/24 network would be 192.168.10.0/24.  A single host
+# is addressed as a single IP address with a /32.  In other words, the host bit for a 
+# subnet other than /32 must be 0.
+#
+# Example Rules:
+# 1,Block,-,-,10.0.0.1/32,10.0.1.0/24,6,-,80,Block 10.0.0.1 from accessing a web server on the 10.0.1.0/24 network
+# 2,Allow,-,-,10.0.0.1/32,10.0.1.125/32,6,-,80,Allow 10.0.0.1 to access a web server on 10.0.1.125 overriding previous rule
+
+
+
+# Task 1: Block cn4 from initiating TCP connections to the world
+1,Block,-,-,10.0.30.4/32,-,6,-,-,Block cn4 from initiating TCP connections
+
+# Task 2: Completely isolate cn5 (both incoming and outgoing)
+2,Block,-,-,10.0.30.5/32,-,-,-,-,Block all outgoing traffic from cn5
+3,Block,-,-,-,10.0.30.5/32,-,-,-,Block all incoming traffic to cn5
+
+# Task 3: Allow HQ to be pinged but not other corporate subnets (except China)
+4,Allow,-,-,-,10.0.0.0/24,1,-,-,Allow HQ to be pinged
+5,Block,-,-,-,10.0.30.0/24,1,-,-,Block pings from China
+6,Block,-,-,10.0.0.0/24,-,1,-,-,Block HQ from being pinged by the world
+7,Allow,-,-,10.0.0.0/24,10.0.1.0/24,1,-,-,Allow HQ to ping US
+8,Allow,-,-,10.0.0.0/24,10.0.40.0/24,1,-,-,Allow HQ to ping UK
+9,Allow,-,-,10.0.0.0/24,10.0.20.0/24,1,-,-,Allow HQ to ping India
+
+# Task 4: Block HTTP/HTTPS responses from cn3
+10,Block,-,-,-,10.0.30.3/32,6,-,80,Block HTTP responses from cn3
+11,Block,-,-,-,10.0.30.3/32,6,-,443,Block HTTPS responses from cn3
+
+# Task 5: Block access to financial microservices on TCP ports 9250 and 9520 using CIDR
+12,Block,-,-,10.0.40.128/28,10.0.1.33/32,6,-,9250,Block UK group from us3 on port 9250
+13,Block,-,-,10.0.40.128/28,10.0.1.34/32,6,-,9250,Block UK group from us4 on port 9250
+14,Block,-,-,10.0.20.120/29,10.0.1.33/32,6,-,9520,Block India group from us3 on port 9520
+15,Block,-,-,10.0.20.120/29,10.0.1.34/32,6,-,9520,Block India group from us4 on port 9520
+
+# Task 6: Block rogue Raspberry Pi that cloned us1 on UDP traffic
+16,Block,00:00:00:01:00:1e,-,-,-,17,-,-,Block rogue device cloning us1 on UDP
+
+# Task 7: Block the internet from accessing TCP port 25 on corporate subnets
+17,Block,-,-,-,10.0.0.0/24,6,-,25,Block external SMTP access to HQ
+18,Block,-,-,-,10.0.1.0/24,6,-,25,Block external SMTP access to US
+19,Block,-,-,-,10.0.20.0/24,6,-,25,Block external SMTP access to India
+20,Block,-,-,-,10.0.30.0/24,6,-,25,Block external SMTP access to China
+21,Block,-,-,-,10.0.40.0/24,6,-,25,Block external SMTP access to UK
