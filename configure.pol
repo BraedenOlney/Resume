@@ -37,12 +37,13 @@
 3,Block,-,-,-,10.0.30.5/32,-,-,-,Block all incoming traffic to cn5
 
 # Task 3: Allow HQ to be pinged but not other corporate subnets (except China)
-4,Allow,-,-,-,10.0.0.0/24,1,-,-,Allow HQ to be pinged
-5,Block,-,-,-,10.0.30.0/24,1,-,-,Block pings from China
-6,Block,-,-,10.0.0.0/24,-,1,-,-,Block HQ from being pinged by the world
-7,Allow,-,-,10.0.0.0/24,10.0.1.0/24,1,-,-,Allow HQ to ping US
-8,Allow,-,-,10.0.0.0/24,10.0.40.0/24,1,-,-,Allow HQ to ping UK
-9,Allow,-,-,10.0.0.0/24,10.0.20.0/24,1,-,-,Allow HQ to ping India
+4,Allow,-,-,10.0.0.0/24,-,1,-,-,Allow HQ to be pinged
+5,Block,-,-,10.0.1.0/24,1,-,-,Block US from pinging HQ
+6,Block,-,-,10.0.20.0/24,1,-,-,Block India from pinging HQ
+7,Block,-,-,10.0.40.0/24,1,-,-,Block UK from pinging HQ
+8,Allow,-,-,10.0.0.0/24,10.0.30.0/24,1,-,-,Allow HQ to ping China
+9,Allow,-,-,10.0.0.0/24,10.0.40.0/24,1,-,-,Allow HQ to ping UK
+
 
 # Task 4: Block HTTP/HTTPS responses from cn3
 10,Block,-,-,-,10.0.30.3/32,6,-,80,Block HTTP responses from cn3
